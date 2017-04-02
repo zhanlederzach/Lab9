@@ -16,17 +16,38 @@ namespace CalculatorApp
         public double numberInMemory = 0;
         public bool isFirstTime = true;
         public char lastOp = '+', lastOp2 = '+';
-        //
+        public double memoryNumber = 0;
+        
         public double SecOp = 0;
         public Form1()
         {
             InitializeComponent();
         }
 
+        private double ParseDouble(string str)
+        {
+            double res;
+            if (!str.Contains(","))
+            {
+                res = double.Parse(str);
+            } else
+            {
+                string a = str.Split(',')[0];
+                string b = str.Split(',')[1];
+                res = double.Parse(a);
+                //0.0785 = 785 / 10000;
+                //0785 /10^4
+                if (b.Length > 0 && b != "0")
+                    res += double.Parse(b) / Math.Pow(10, b.Length);
+            }
+            return res;
+        }
+
         private void digit_Click(object sender, EventArgs e)
         {
             Button btn = sender as Button;
-            display.Text += btn.Text;
+            if (display.Text == "0") display.Text = btn.Text;
+            else display.Text += btn.Text;
         }
        
         private void operationCCE_Click(object sender, EventArgs e)
@@ -40,71 +61,65 @@ namespace CalculatorApp
 
         private void plusMinus_Click(object sender, EventArgs e)
         {
-            double res = ((-1) * (double.Parse(display.Text)));
+            double res = ((-1) * (ParseDouble(display.Text)));
             display.Text = res.ToString();
         }
 
-        /*
-        private void operation_Click(object sender, EventArgs e)
-        {
-            Button btn = sender as Button;
-            if (btn.Text == "+")
-            {
-                brain.firstOperand = double.Parse(display.Text);
-                display.Text = "";
-            }
-            else
-            {
-                brain.secondOperand = double.Parse(display.Text);
-                display.Text = brain.SumOperation().ToString();
-            }
-        }
-        */
-
         private void operation_sqr(object sender, EventArgs e)
         {
-            display.Text = (double.Parse(display.Text) * double.Parse(display.Text)).ToString();
+            display.Text = (ParseDouble(display.Text) * ParseDouble(display.Text)).ToString();
         }
 
         private void operation_Sqrt(object sender, EventArgs e)
         {
-            display.Text = Math.Sqrt(double.Parse(display.Text)).ToString();
+            display.Text = Math.Sqrt(ParseDouble(display.Text)).ToString();
         }
 
         private void operation_Percent(object sender, EventArgs e)
         {
-            display.Text = (double.Parse(display.Text) / 100).ToString();
+            display.Text = (ParseDouble(display.Text) / 100).ToString();
         }
 
         private void operationOneDivide_Click(object sender, EventArgs e)
         {
-            double res= (1 / (double.Parse(display.Text)));
+            double res= (1 / (ParseDouble(display.Text)));
             display.Text=res.ToString();
         }
 
         private void operaionDelete_Click(object sender, EventArgs e)
         {
-
+            if (display.Text.Length > 0)
+                display.Text = display.Text.Remove(display.Text.Length - 1);
         }
 
         private void operationDot(object sender, EventArgs e)
         {
-
+            display.Text += ",";
         }
 
-        private void operation_MS(object sender, EventArgs e)
+        private void memory_read_click(object sender, EventArgs e)
         {
-
+            display.Text = memoryNumber.ToString();
         }
 
-        private void operation_Mplus(object sender, EventArgs e)
+        private void memory_clear_click(object sender, EventArgs e)
         {
-
+            memoryNumber = 0;
         }
 
-        private void operation_Mminus(object sender, EventArgs e)
+        private void memory_save_click(object sender, EventArgs e)
         {
+            memoryNumber = ParseDouble(display.Text);
+        }
 
+        private void memory_plus_click(object sender, EventArgs e)
+        {
+            memoryNumber += ParseDouble(display.Text);
+        }
+
+        private void memory_minus_click(object sender, EventArgs e)
+        {
+            memoryNumber -= ParseDouble(display.Text);
         }
 
         private void operation_Click(object sender, EventArgs e)
@@ -117,7 +132,7 @@ namespace CalculatorApp
                     if (lastOp != '=')
                     {
                         brain.firstOperand = numberInMemory;
-                        brain.secondOperand = double.Parse(display.Text);
+                        brain.secondOperand = ParseDouble(display.Text);
                     }
                     else
                     {
@@ -132,7 +147,7 @@ namespace CalculatorApp
                 default:
                     if (isFirstTime)
                     {
-                        numberInMemory = double.Parse(display.Text);
+                        numberInMemory = ParseDouble(display.Text);
                         isFirstTime = false;
                     }
 
@@ -157,7 +172,6 @@ namespace CalculatorApp
                         brain.secondOperand = 0;
 
                         break;
-
                 }
             }
           */
